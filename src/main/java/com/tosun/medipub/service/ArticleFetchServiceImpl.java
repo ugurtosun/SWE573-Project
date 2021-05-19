@@ -66,6 +66,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
     @Override
     public int fetchArticles(){
 
-        return 0; //TODO:Implement method
+        return 0; //TODO:Implement method2
+
     }
 }
