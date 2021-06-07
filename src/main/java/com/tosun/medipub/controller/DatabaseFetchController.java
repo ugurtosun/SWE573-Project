@@ -47,6 +47,8 @@ public class DatabaseFetchController {
     @GetMapping(path = "/articles")
     public String fetchArticles(){
 
+        articleFetchService.fetchArticles();
+
         return "failed";
     }
 }
