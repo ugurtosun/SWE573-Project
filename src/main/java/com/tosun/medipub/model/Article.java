@@ -128,13 +128,13 @@ public class Article {
             preparedStatement.setString(6, this.language);
             preparedStatement.setString(7, this.articleAbstract);
 
-            Array array = connection.createArrayOf("VARCHAR", this.authorList.toArray());
-            preparedStatement.setArray(8, array);
+            Array authors = connection.createArrayOf("VARCHAR", this.authorList.toArray());
+            preparedStatement.setArray(8, authors);
 
-            Array array2 = connection.createArrayOf("VARCHAR", this.keywords.toArray());
-            preparedStatement.setArray(9, array2);
+            Array keywords = connection.createArrayOf("VARCHAR", this.keywords.toArray());
+            preparedStatement.setArray(9, keywords);
             //System.out.println(preparedStatement.executeUpdate());
-            preparedStatement.addBatch();
+            //preparedStatement.addBatch();
             preparedStatement.close();
             connection.close();
 

@@ -16,13 +16,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
 
@@ -79,7 +77,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
 
        // sendPost();
 
-        for(int i= 0; i < 5000; i++) {
+        for(int i= 0; i < 500; i++) {
 
             String query = "select *\n" +
                     "from public.articles_lookup\n" +
@@ -99,6 +97,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
                     String articleID = result.getString(1);
                     articleIDs.add(articleID);
                 }
+                connection.close();
 
                 String articleList = String.join(",", articleIDs);
                 sendPost(articleList);
@@ -110,12 +109,11 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
             return 0;
         }
 
-
     private StringBuffer sendPost(String articleIDList) {
 
         StringBuffer response = new StringBuffer();
         String url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi";
-        String content = "?db=pubmed&retmode=xml&id=";
+        String content = "?db=pubmed&api_key=87c1eb16114c216869c55a19d5e3023fec08&retmode=xml&id=";
         content = content + articleIDList;
         final String CONTENT_TYPE = "application/xml";
 
@@ -145,12 +143,18 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
             JSONObject jsonResponse = XML.toJSONObject(response.toString());
             JSONArray articleList =  jsonResponse.getJSONObject("PubmedArticleSet").optJSONArray("PubmedArticle");
 
+            ArrayList<Article> articles = new ArrayList<Article>();
+
             if(articleList != null){
                 for(int i=0; i < articleList.length(); i++){
                     Object article = articleList.get(i);
-                    convertObjectToArticle(article);
+                    Article tempArticle = convertObjectToArticle(article);
+                    if(tempArticle != null){
+                        articles.add(tempArticle);
+                    }
                 }
             }
+            writeArticlesToDB(articles);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -158,7 +162,46 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
         return response;
     }
 
-    public void convertObjectToArticle(Object object){
+    public void writeArticlesToDB(ArrayList<Article> articles){
+
+        String query = "INSERT INTO articles (article_id, title, journal, publish_date, revision_date, lang, abstract, authors, keywords )" +
+                " VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING";
+
+        Connection connection = null;
+        try {
+            connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            for(int i = 0; i < articles.size(); i++){
+
+                preparedStatement.setString(1, articles.get(i).getPMID());
+                preparedStatement.setString(2, articles.get(i).getTitle());
+                preparedStatement.setString(3, articles.get(i).getJournal());
+                preparedStatement.setDate(4, new java.sql.Date(articles.get(i).getPublishDate().getTime()));
+                preparedStatement.setDate(5, new java.sql.Date(articles.get(i).getRevisionDate().getTime()));
+                preparedStatement.setString(6, articles.get(i).getLanguage());
+                preparedStatement.setString(7, articles.get(i).getArticleAbstract());
+
+                Array authors = connection.createArrayOf("VARCHAR", articles.get(i).getAuthorList().toArray());
+                preparedStatement.setArray(8, authors);
+
+                Array keywords = connection.createArrayOf("VARCHAR", articles.get(i).getKeywords().toArray());
+                preparedStatement.setArray(9, keywords);
+                preparedStatement.addBatch();
+                //System.out.println(preparedStatement.executeUpdate());
+                //preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+    }
+
+    public Article convertObjectToArticle(Object object){
 
         try {
             JSONObject jsonObject = (JSONObject) object;
@@ -178,7 +221,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
 
             JSONObject articleDate = jsonObject.getJSONObject("Article").optJSONObject("ArticleDate");
 
-            Date publishDate = parseDate("1999-12-30");
+            Date publishDate = parseDate("1899-12-30");
 
             if (articleDate != null){
                 String day = articleDate.opt("Day").toString();
@@ -203,7 +246,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
             JSONObject abstractObject = jsonObject.getJSONObject("Article").optJSONObject("Abstract");
 
             if(abstractObject == null){
-                return;
+                return null;
             }
 
             String articleAbstract = abstractObject.get("AbstractText").toString();
@@ -270,10 +313,12 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
             article.setLanguage(language);
             article.setPublishDate(publishDate);
             article.setRevisionDate(revisionDate);
-            article.writeToDB(jdbcTemplate);
+            return article;
+         //   article.writeToDB(jdbcTemplate);
         } catch (Exception e) {
-            System.out.println("error");
             e.printStackTrace();
+            System.out.println("Error occured when article object created");
+            return null;
         }
 
     }

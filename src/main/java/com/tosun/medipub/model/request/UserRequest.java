@@ -1,18 +1,13 @@
 package com.tosun.medipub.model.request;
 
-import org.springframework.lang.NonNull;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class UserRequest {
 
-    @NotNull(message = "First name cannot be null")
-    private String firstName;
-
-    @NotNull(message = "Last name cannot be null")
-    private String lastName;
+    @NotNull(message = "Username cannot be null")
+    private String userName;
 
     @Email(message = "Wrong email address format")
     private String email;
@@ -21,20 +16,12 @@ public class UserRequest {
     @Size(min = 4, max = 16, message = "Password length should in range [4, 16]")
     private String password;
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
