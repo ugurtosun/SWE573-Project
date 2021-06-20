@@ -2,7 +2,6 @@ package com.tosun.medipub.model;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.persistence.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +19,7 @@ public class Article {
     private String articleAbstract;
     private ArrayList<String> authorList;
     private ArrayList<String> keywords;
+    private ArrayList<Tag> tags;
 
     public Article() {
     }
@@ -108,6 +108,14 @@ public class Article {
 
     public void setKeywords(ArrayList<String> keywords) {
         this.keywords = keywords;
+    }
+
+    public ArrayList<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(ArrayList<Tag> tags) {
+        this.tags = tags;
     }
 
     public void writeToDB(JdbcTemplate jdbcTemplate) throws SQLException {

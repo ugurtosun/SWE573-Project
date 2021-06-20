@@ -8,6 +8,4 @@ public interface ArticleService {
 
     ArrayList<Article> getArticles(ArrayList<String> articleIDList);
 
-    boolean tagArticle(); //TODO: Implement Method
-
 }

@@ -7,12 +7,46 @@ public class Tag {
 
     private String tagID;
     private String customTagName;
-    private String wikiTagName;
-    private String wikiURL;
-    private ArrayList<String> tagRelatedKeywords;
+    private String customDescription;
+    private String label;
+    private String url;
+    private String articleID;
+    private String wikiID;
 
     public Tag(String customTagName) {
         this.customTagName = customTagName;
+    }
+
+    public Tag(){
+
+    }
+
+    public void setCustomTagName(String customTagName) {
+        this.customTagName = customTagName;
+    }
+
+    public String getCustomDescription() {
+        return customDescription;
+    }
+
+    public void setCustomDescription(String customDescription) {
+        this.customDescription = customDescription;
+    }
+
+    public String getArticleID() {
+        return articleID;
+    }
+
+    public void setArticleID(String articleID) {
+        this.articleID = articleID;
+    }
+
+    public String getWikiID() {
+        return wikiID;
+    }
+
+    public void setWikiID(String wikiID) {
+        this.wikiID = wikiID;
     }
 
     public String getTagID() {
@@ -27,27 +61,19 @@ public class Tag {
         return customTagName;
     }
 
-    public String getWikiTagName() {
-        return wikiTagName;
+    public String getLabel() {
+        return label;
     }
 
-    public void setWikiTagName(String wikiTagName) {
-        this.wikiTagName = wikiTagName;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public String getWikiURL() {
-        return wikiURL;
+    public String getUrl() {
+        return url;
     }
 
-    public void setWikiURL(String wikiURL) {
-        this.wikiURL = wikiURL;
-    }
-
-    public ArrayList<String> getTagRelatedKeywords() {
-        return tagRelatedKeywords;
-    }
-
-    public void setTagRelatedKeywords(ArrayList<String> tagRelatedKeywords) {
-        this.tagRelatedKeywords = tagRelatedKeywords;
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

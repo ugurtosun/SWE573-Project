@@ -27,24 +27,26 @@ public class ArticleSearchController {
     }
 
     @GetMapping(path = "/searchArticle")
-    public ArrayList<String> searchArticles(@RequestParam(name = "keywods", required = true) ArrayList<String> keywords
-                                        ,@RequestParam(name = "isAdvanced", required = true) boolean isAdvanced
-                                        ,@RequestParam(name = "isCombined", required = true) boolean isCombined
-                                        ,@RequestParam(name = "fields", required = false) ArrayList<String> fields
-                                        ,@RequestParam(name = "startDate", required = false) Date startDate
-                                        ,@RequestParam(name = "endDate", required = false) Date endDate){
+    public ArrayList<Article> searchArticles(@RequestParam(name = "keywords", required = true) ArrayList<String> keywords
+                                        , @RequestParam(name = "isAdvanced", required = true) boolean isAdvanced
+                                        , @RequestParam(name = "isCombined", required = true) boolean isCombined
+                                        , @RequestParam(name = "fields", required = false) ArrayList<String> fields
+                                        , @RequestParam(name = "startDate", required = false) Date startDate
+                                        , @RequestParam(name = "endDate", required = false) Date endDate){
 
-        if(!isAdvanced){
-            return searchService.searchArticles(keywords, isCombined);
+        if(fields.get(0).equals("all")){
+            //return searchService.searchArticles(keywords, isCombined);
+            return articleService.getArticles(searchService.searchArticles(keywords, isCombined));
         }else{
-            return searchService.searchArticlesAdvanced(keywords, isCombined, fields, startDate, endDate);
+            return articleService.getArticles(searchService.searchArticlesAdvanced(keywords, isCombined,
+                                                                                      fields, startDate, endDate));
         }
     }
 
     @GetMapping(path = "/getArticle")
     public ArrayList<Article> getArticles(@RequestParam(name = "articleIDs", required = true) ArrayList<String> articleIDs){
 
-        articleService.getArticles(articleIDs);
-        return null;
+        return articleService.getArticles(articleIDs);
+        //return null;
     }
 }

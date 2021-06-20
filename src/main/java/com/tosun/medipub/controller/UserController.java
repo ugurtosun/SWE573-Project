@@ -1,23 +1,22 @@
 package com.tosun.medipub.controller;
 
-import com.tosun.medipub.model.request.UserRequest;
-import com.tosun.medipub.model.response.UserRest;
+import com.tosun.medipub.model.User;
 import com.tosun.medipub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
 
+
+@CrossOrigin(origins = "http://localhost:*")
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("user")
 public class UserController {
 
-    public static Map<String, UserRest> usersMap;
+    public static Map<String, User> usersMap;
     UserService userService;
 
     public UserController(){ }
@@ -28,10 +27,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserRest> createUser(@Valid @RequestBody UserRequest userRequest){
+    public Object createUser(@Valid @RequestBody User user){
 
-        UserRest userResponse = userService.createUser(userRequest);
-        return new ResponseEntity<UserRest>(userResponse, HttpStatus.CREATED);
+        return userService.createUser(user);
     }
 
+    @CrossOrigin(origins = "http://localhost:34565")
+    @PostMapping("/login")
+    public boolean loginUser(@Valid @RequestBody User user) {
+        return userService.login(user);
+
+    }
 }

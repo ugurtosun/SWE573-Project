@@ -77,8 +77,8 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
 
        // sendPost();
 
-        for(int i= 0; i < 500; i++) {
-
+       // for(int i= 0; i < 500; i++) {
+        for(int i= 0; i < 1; i++) {
             String query = "select *\n" +
                     "from public.articles_lookup\n" +
                     "order by article_id asc\n" +
@@ -249,8 +249,18 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
                 return null;
             }
 
-            String articleAbstract = abstractObject.get("AbstractText").toString();
-
+            String articleAbstract;
+            JSONObject abstractJSONObject = abstractObject.optJSONObject("AbstractText");
+            if(abstractJSONObject == null){
+                JSONArray jsonAbstractArray = abstractJSONObject.optJSONArray("AbstractText");
+                if(jsonAbstractArray == null){
+                    articleAbstract = abstractObject.get("AbstractText").toString();
+                }else{
+                    return null;
+                }
+            }else{
+                return null;
+            }
 
             ArrayList<String> authors = new ArrayList<>();
 

@@ -3,6 +3,7 @@ package com.tosun.medipub;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @SpringBootApplication
 public class MedipubApplication  {
 
@@ -12,3 +13,6 @@ public class MedipubApplication  {
 
 	}
 }
+
+
+

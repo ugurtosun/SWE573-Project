@@ -20,13 +20,15 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    @PostMapping(path = "/createTag")
-    public Tag createTag(@RequestParam(name = "customTagName", required = true) String customTagName,
+    @GetMapping(path = "/createTag")
+    public boolean createTag(@RequestParam(name = "customTagName", required = false) String customTagName,
+                         @RequestParam(name = "customDescription", required = false) String customDescription,
                          @RequestParam(name = "wikiTagName", required = false) String wikiTagName,
+                         @RequestParam(name = "wikiID", required = false) String wikiID,
                          @RequestParam(name = "wikiURL", required = false) String wikiURL,
                          @RequestParam(name = "articleID", required = false) String articleID){
 
-        return tagService.createTag(customTagName, wikiTagName, wikiURL, articleID);
+        return tagService.createTag(customTagName, customDescription, wikiTagName, wikiID, wikiURL, articleID);
     }
 
 

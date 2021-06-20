@@ -1,6 +1,7 @@
 package com.tosun.medipub.service;
 
 import com.tosun.medipub.model.Article;
+import com.tosun.medipub.model.Tag;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -53,9 +54,11 @@ public class ArticleServiceImpl implements ArticleService{
                 article.setRevisionDate(result.getDate(5));
                 article.setAuthorList(convertArrayToArraylist(result.getString("authors")));
                 article.setKeywords(convertArrayToArraylist(result.getString("keywords")));
+                article.setTags(getArticleTags(article.getPMID()));
                 articleList.add(article);
             }
             connection.close();
+            return articleList;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -71,8 +74,39 @@ public class ArticleServiceImpl implements ArticleService{
         return null;
     }
 
-    @Override
-    public boolean tagArticle() {
-        return false;
+    public ArrayList<Tag> getArticleTags(String articleID){
+
+        String query = "select *\n" +
+                "from public.tags\n" +
+                "where article_id = ?";
+
+        Connection connection = null;
+        try {
+            connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, articleID);
+            preparedStatement.addBatch();
+            ResultSet result = preparedStatement.executeQuery();
+
+            ArrayList<Tag> tagList = new ArrayList<>();
+
+            while (result.next()) {
+
+                Tag tag = new Tag();
+                tag.setArticleID(articleID);
+                tag.setTagID(result.getString(1));
+                tag.setCustomTagName(result.getString(2));
+                tag.setCustomDescription(result.getString(3));
+                tag.setLabel(result.getString(4));
+                tag.setUrl(result.getString(5));
+                tag.setWikiID(result.getString(6));
+                tagList.add(tag);
+            }
+            connection.close();
+            return tagList;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
     }
 }

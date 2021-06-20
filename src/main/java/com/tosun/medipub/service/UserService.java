@@ -1,10 +1,11 @@
 package com.tosun.medipub.service;
 
-import com.tosun.medipub.model.request.UserRequest;
-import com.tosun.medipub.model.response.UserRest;
+import com.tosun.medipub.model.User;
 
 public interface UserService {
 
-    UserRest createUser(UserRequest userRequest);
+    boolean createUser(User user);
+
+    boolean login(User user);
 
 }

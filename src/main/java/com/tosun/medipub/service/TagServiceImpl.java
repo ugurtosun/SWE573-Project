@@ -18,33 +18,29 @@ public class TagServiceImpl implements TagService{
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public Tag createTag(String customTagName, String wikiName, String wikiURL, String articleID) {
+    public boolean createTag(String customTagName, String customDescription, String wikiTagName
+            , String wikiID, String  wikiURL, String articleID) {
 
         Tag tag = new Tag(customTagName);
-        if(wikiName != null){
-            tag.setWikiTagName(wikiName);
-            tag.setWikiURL(wikiURL);
+        if(wikiTagName != null){
+            tag.setLabel(wikiTagName);
+            tag.setUrl(wikiURL);
         }
-        //TODO: tag keywords service will be implemented
-        tag = writeTagToDB(tag);
-        if(tag != null && articleID != null){
-            if(updateArticleTag(articleID, tag.getTagID(), false) == 1){
-                return tag;
-            }
-        }
-        return null;
-    }
+        tag.setCustomDescription(customDescription);
+        tag.setArticleID(articleID);
+        tag.setWikiID(wikiID);
 
-    @Override
-    public boolean deleteTag() {
-        //TODO: implement delete tag
+        tag = writeTagToDB(tag);
+        if(tag != null){
+            return true;
+        }
         return false;
     }
 
     public Tag writeTagToDB(Tag tag){
 
-        String query = "INSERT INTO tags(tag_name, wiki_name, wiki_url, tag_keywords)\n" +
-                        "VALUES (?,?,?, null) RETURNING tag_id";
+        String query = "INSERT INTO tags(tag_name, description, wiki_name, wiki_url, wiki_id, article_id)\n" +
+                        "VALUES (?,?,?,?,?,?) RETURNING tag_id";
 
         Connection connection = null;
 
@@ -52,8 +48,11 @@ public class TagServiceImpl implements TagService{
             connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,tag.getCustomTagName());
-            preparedStatement.setString(2,tag.getWikiTagName());
-            preparedStatement.setString(3,tag.getWikiURL());
+            preparedStatement.setString(2,tag.getCustomDescription());
+            preparedStatement.setString(3,tag.getLabel());
+            preparedStatement.setString(4,tag.getUrl());
+            preparedStatement.setString(5,tag.getWikiID());
+            preparedStatement.setString(6, tag.getArticleID());
 
             preparedStatement.addBatch();
             preparedStatement.execute();
@@ -70,39 +69,5 @@ public class TagServiceImpl implements TagService{
             throwables.printStackTrace();
         }
         return null;
-    }
-
-    public int updateArticleTag(String articleID, String tagID, boolean isRemove){
-
-        String query;
-
-        if(!isRemove){
-            query = "UPDATE articles SET tags = array_append(tags,(?)) WHERE article_id = (?)";
-        }else{
-            query = "UPDATE articles SET tags = array_remove(tags,(?)) WHERE article_id = (?)";
-        }
-
-        Connection connection = null;
-        int resultCode = -1;
-
-        try {
-            connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1,tagID);
-            preparedStatement.setString(2,articleID);
-
-            preparedStatement.addBatch();
-            preparedStatement.execute();
-
-            ResultSet resultSet = preparedStatement.getResultSet();
-            if(resultSet.next()) {
-                resultCode= resultSet.getInt(1);
-            }
-            connection.close();
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return resultCode;
     }
 }

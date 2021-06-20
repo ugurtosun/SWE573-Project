@@ -1,6 +1,5 @@
 package com.tosun.medipub.service;
 
-import com.sun.xml.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -21,8 +20,10 @@ public class SearchServiceImpl implements SearchService {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public ArrayList<String> searchArticles(ArrayList<String> keywords, boolean isCombined) {
+    public ArrayList<String> searchArticles(ArrayList<String> keywordsRaw, boolean isCombined) {
 
+        String[] keywordsList = keywordsRaw.get(0).strip().split(" ");
+        ArrayList<String> keywords = new ArrayList<String>(Arrays.asList(keywordsList));
         String subQuery = "";
 
         for(int i=0; i<keywords.size(); i++){
@@ -63,7 +64,9 @@ public class SearchServiceImpl implements SearchService {
 
             ArrayList<String> articleList = new ArrayList<>();
 
-            while (result.next()) {
+            int counter = 0;
+            while (result.next() & counter < 50) {  //TODO: rethink
+                counter++;
                 String articleID = result.getString(1);
                 articleList.add(articleID);
             }
@@ -78,8 +81,10 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public ArrayList<String> searchArticlesAdvanced(ArrayList<String> keywords, boolean isCombined, ArrayList<String> fields, Date startDate, Date endDate) {
+    public ArrayList<String> searchArticlesAdvanced(ArrayList<String> keywordsRaw, boolean isCombined, ArrayList<String> fields, Date startDate, Date endDate) {
 
+        String[] keywordsList = keywordsRaw.get(0).strip().split(" ");
+        ArrayList<String> keywords = new ArrayList<String>(Arrays.asList(keywordsList));
         String subQuery = "";
 
         for(int i=0; i<keywords.size(); i++){
