@@ -4,16 +4,11 @@ import com.tosun.medipub.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.UUID;
-
-import static com.tosun.medipub.controller.UserController.usersMap;
 
 @Service
 public class UserServiceImpl implements UserService{

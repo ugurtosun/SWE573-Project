@@ -1,12 +1,10 @@
 package com.tosun.medipub.controller;
 
 import com.tosun.medipub.model.Article;
-import com.tosun.medipub.service.ArticleFetchService;
 import com.tosun.medipub.service.ArticleService;
 import com.tosun.medipub.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 

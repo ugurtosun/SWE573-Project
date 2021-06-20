@@ -1,6 +1,5 @@
 package com.tosun.medipub.controller;
 
-import com.tosun.medipub.model.Tag;
 import com.tosun.medipub.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

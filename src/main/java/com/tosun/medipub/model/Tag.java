@@ -1,8 +1,5 @@
 package com.tosun.medipub.model;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 public class Tag {
 
     private String tagID;
