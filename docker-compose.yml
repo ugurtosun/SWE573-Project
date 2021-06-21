@@ -1,0 +1,32 @@
+version: '3'
+services:
+  postgres:
+    image: "ugurtosun/postgresql:v1"
+    container_name: postgres-test
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=medihub
+    volumes:
+      - ./scripts/dump:/docker-entrypoint-initdb.d
+
+  backend:
+    image: "ugurtosun/medipub-backend-image:v1"
+    build:
+      context: .
+    container_name: backend-test
+    network_mode: "host"
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/medihub
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+    ports:
+      - "8080:8080"
+
+
+

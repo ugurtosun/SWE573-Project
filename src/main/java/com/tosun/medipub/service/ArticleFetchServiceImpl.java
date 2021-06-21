@@ -37,7 +37,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
 
         var client = HttpClient.newHttpClient();
         var request = HttpRequest.newBuilder(
-                URI.create("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&RetMax=50000&term=brain&RetStart=1"))
+                URI.create("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&RetMax=60000&term=brain&RetStart=1"))
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
                 .build();
@@ -60,6 +60,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
                 preparedStatement.setString(1,jsonResponse2.get(i).toString());
                 preparedStatement.addBatch();
             }
+            preparedStatement.executeBatch();
             preparedStatement.close();
             connection.close();
 
@@ -76,7 +77,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
 
        // sendPost();
 
-        for(int i= 0; i < 500; i++) {
+        for(int i= 0; i < 600; i++) {
     //    for(int i= 0; i < 1; i++) {
             String query = "select *\n" +
                     "from public.articles_lookup\n" +
