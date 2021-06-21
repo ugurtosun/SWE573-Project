@@ -76,8 +76,8 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
 
        // sendPost();
 
-       // for(int i= 0; i < 500; i++) {
-        for(int i= 0; i < 1; i++) {
+        for(int i= 0; i < 500; i++) {
+    //    for(int i= 0; i < 1; i++) {
             String query = "select *\n" +
                     "from public.articles_lookup\n" +
                     "order by article_id asc\n" +
@@ -156,6 +156,7 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
             writeArticlesToDB(articles);
 
         } catch (IOException e) {
+            System.out.println("error occured");
             e.printStackTrace();
         }
         return response;
@@ -251,18 +252,22 @@ public class ArticleFetchServiceImpl implements ArticleFetchService{
             String articleAbstract;
             JSONObject abstractJSONObject = abstractObject.optJSONObject("AbstractText");
             if(abstractJSONObject == null){
-                JSONArray jsonAbstractArray = abstractJSONObject.optJSONArray("AbstractText");
+                JSONArray jsonAbstractArray = abstractObject.optJSONArray("AbstractText");
                 if(jsonAbstractArray == null){
                     articleAbstract = abstractObject.get("AbstractText").toString();
                 }else{
-                    return null;
+                    String content = "";
+                    for(int i = 0; i < jsonAbstractArray.length(); i++){
+                        content = content + jsonAbstractArray.getJSONObject(i).get("content");
+                        content = content + " ";
+                    }
+                    articleAbstract = content;
                 }
             }else{
                 return null;
             }
 
             ArrayList<String> authors = new ArrayList<>();
-
             JSONObject authorObject = jsonObject.getJSONObject("Article").getJSONObject("AuthorList");
             JSONArray authorList = authorObject.optJSONArray("Author");
 

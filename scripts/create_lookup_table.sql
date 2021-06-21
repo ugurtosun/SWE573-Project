@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS articles_lookup2(article_id varchar(255) NOT NULL, PRIMARY KEY (article_id))
