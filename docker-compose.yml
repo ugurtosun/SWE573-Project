@@ -17,12 +17,11 @@ services:
     build:
       context: .
     container_name: backend-test
-    network_mode: "host"
     restart: always
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/medihub
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medihub
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=1234
     ports:
